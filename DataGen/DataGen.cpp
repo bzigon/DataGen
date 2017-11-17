@@ -1,4 +1,8 @@
-
+//
+// DataGen.cpp -- program to ...
+//	1. query all kernels for their configurations, or
+//  2. execute a given kernel with a given configuration
+//
 #include <iostream>
 #include <string>
 #include <exception>   
