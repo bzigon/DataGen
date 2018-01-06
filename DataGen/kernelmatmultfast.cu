@@ -293,9 +293,11 @@ void LaunchKernelMatMultFast(dim3& gs, dim3& bs, char **argv, int argc, int next
 		//
 		// Now compute AB= A*B on the host so that we can compare it with the GPU.
 		//
+		// First transpose h_B matrix into h_T using SSE.
+		// Then use OpenMP and AVX to perform the matrix multiplication 8 floats at a time.
+		//
 		printf("\nGPU finished %f milliseconds.\nComputing host solution ...", milliseconds);
 		{
-#if 1
 			float *h_T = new float[numElementsSq];
 
 			for (int i = 0; i < numElements; i += 4)
@@ -338,23 +340,7 @@ void LaunchKernelMatMultFast(dim3& gs, dim3& bs, char **argv, int argc, int next
 
 			delete[]h_T;
 		}
-#else
-#pragma omp parallel for
-			for (int i = 0; i < numElements; i++)
-			{
-				for (int j = 0; j < numElements; j++)
-				{
-					float T = 0.0f;
-					for (int k = 0; k < numElements; k++)
-					{
-						T += h_A[i*numElements + k] * h_B[k*numElements + j];
-					}
 
-					h_AB[i*numElements + j] = T;
-				}
-			}
-		}
-#endif
 
 		// Verify that the result vector is correct
 		printf("\nValidating results ...");

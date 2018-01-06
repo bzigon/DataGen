@@ -220,6 +220,9 @@ void LaunchKernelMatMult(dim3& gs, dim3& bs, char **argv, int argc, int nextarg)
 		//
 		// Now compute AB= A*B on the host so that we can compare it with the GPU.
 		//
+		// First transpose h_B matrix into h_T using SSE.
+		// Then use OpenMP and AVX to perform the matrix multiplication 8 floats at a time.
+		//
 		printf("\nGPU finished %f milliseconds.\nComputing host solution ...", milliseconds);
 		{
 			float *h_T = new float[numElementsSq];
