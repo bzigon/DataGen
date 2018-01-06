@@ -34,12 +34,12 @@ public:
 
 } KernelVectorAddCBTrigILP2_64Params_t;
 
-void QueryKernelVectorAddCBTrigILP2_64(char *KernelName, int gs_start, int gs_end, int gs_inc, int numele)
+void QueryKernelVectorAddCBTrigILP2_64(char *KernelName, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele)
 {
 	list<KernelVectorAddCBTrigILP2_64Params_t*> params;
 
 	for (int gsx = gs_start; gsx < gs_end; gsx += gs_inc)
-		for (int bsx = 32; bsx < 1025; bsx += 32)
+		for (int bsx = bs_start; bsx < bs_end; bsx += bs_inc)
 			params.push_back(new KernelVectorAddCBTrigILP2_64Params_t(bsx, 1, 1, gsx, 1, 1, numele));
 
 	printf("#\n# %s\n#", KernelName);

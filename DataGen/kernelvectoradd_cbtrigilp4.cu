@@ -34,12 +34,18 @@ public:
 
 } KernelVectorAddCBTrigILP4Params_t;
 
-void QueryKernelVectorAddCBTrigILP4(char *KernelName, int gs_start, int gs_end, int gs_inc, int numele)
+void QueryKernelVectorAddCBTrigILP4(char *KernelName, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele)
 {
 	list<KernelVectorAddCBTrigILP4Params_t*> params;
 
+	if (gs_end > 896)
+	{
+		gs_end = 897;
+		printf("\n** Clamping gs_end to 896 in QueryKernelVectorAddCBTrigILP4 for TitanV**\n");
+	}
+
 	for (int gsx = gs_start; gsx < gs_end; gsx += gs_inc)
-		for (int bsx = 32; bsx < 129; bsx += 32)
+		for (int bsx = bs_start; bsx < bs_end; bsx += bs_inc)
 			params.push_back(new KernelVectorAddCBTrigILP4Params_t(bsx, 1, 1, gsx, 1, 1, numele));
 
 	printf("#\n# %s\n#", KernelName);
@@ -124,9 +130,6 @@ kernelVectorAddCBTrigILP4(const float *A, const float *B, float *C, float K1, fl
 }
 #endif
 
-#if 1
-//
-
 __global__ void
 kernelVectorAddCBTrigILP4(const float *A, const float *B, float *C, float K1, float K2, int numElements)
 {
@@ -166,8 +169,6 @@ kernelVectorAddCBTrigILP4(const float *A, const float *B, float *C, float K1, fl
 		float T8 = 0;
 		if (i + s3 < numElements)
 			T8 = B[i + s3];
-//		__syncthreads();
-
 
 		float T9 = sin(K1);
 		float T10 = cos(K2);
@@ -193,7 +194,7 @@ kernelVectorAddCBTrigILP4(const float *A, const float *B, float *C, float K1, fl
 		if (i + s3 < numElements) C[i + s3] = T23 + T24;
 	}
 }
-#endif
+
 
 #if 0
 __global__ void
@@ -214,55 +215,6 @@ kernelVectorAddCBTrigILP4(const float *A, const float *B, float *C, float K1, fl
 }
 #endif
 
-#if 0
-__global__ void
-kernelVectorAddCBTrigILP4(float *A, float *B, float *C, float K1, float K2, int numElements)
-{
-	const int stride = blockDim.x * gridDim.x;
-
-	for (int i = blockDim.x * blockIdx.x + threadIdx.x; i < numElements/4; i += stride)
-	{
-		float4 Ar = reinterpret_cast<float4*>(A)[i];	// Ar.x = A[i], Ar.y = A[i+1], Ar.z = A[i+2], Ar.w = A[i+3]
-		float4 Br = reinterpret_cast<float4*>(B)[i];	// Br.x = B[i], Br.y = B[i+1], Br.z = B[i+2], Br.w = B[i+3]
-
-		float T5 = sin(K1);
-		float T6 = cos(K2);
-		float T7 = sin(K1);
-		float T8 = cos(K2);
-		float T9 = sin(K1);
-		float T10 = cos(K2);
-		float T11 = sin(K1);
-		float T12 = cos(K2);
-
-		float4 C0, C1;
-		C0.x = Ar.x*T5;
-		C1.x = Br.x*T6;
-
-		C0.y = Ar.y*T7;
-		C1.y = Br.y*T8;
-
-		C0.z = Ar.z*T9;
-		C1.z = Br.z*T10;
-
-		C0.w = Ar.w*T11;
-		C1.w = Br.w*T12;
-
-		float4 C2;
-		C2.x = C0.x + C1.x;
-		C2.y = C0.y + C1.y;
-		C2.z = C0.z + C1.z;
-		C2.w = C0.w + C1.w;
-
-		reinterpret_cast<float4*>(C)[i] = C2;
-	}
-
-	// Process remaining elements
-	for (int i = blockDim.x * blockIdx.x + threadIdx.x + (numElements / 4) * 4; i < numElements; i += blockDim.x * gridDim.x + threadIdx.x)
-	{
-		C[i] = sin(K1)*A[i] + cos(K2)*B[i];
-	}
-}
-#endif
 
 void LaunchKernelVectorAddCBTrigILP4(dim3& gs, dim3& bs, char **argv, int argc, int nextarg)
 {

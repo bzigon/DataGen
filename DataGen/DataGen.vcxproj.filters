@@ -43,5 +43,14 @@
     <CudaCompile Include="kernelvectoradd_cbtrigilp2_64.cu">
       <Filter>Source Files</Filter>
     </CudaCompile>
+    <CudaCompile Include="kernelvectoradd_cbtrigilp4_128.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="kernelmatmult.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="kernelmatmultfast.cu">
+      <Filter>Source Files</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

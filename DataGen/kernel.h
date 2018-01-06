@@ -5,28 +5,39 @@ using namespace std;
 
 #define KernelVectorAddName "KernelVectorAdd"
 void LaunchKernelVectorAdd(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAdd(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAdd(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
 #define KernelVectorAddCBName "KernelVectorAddCB"
 void LaunchKernelVectorAddCB(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAddCB(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAddCB(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
 #define KernelVectorAddCBTrigName "KernelVectorAddCBTrig"
 void LaunchKernelVectorAddCBTrig(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAddCBTrig(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAddCBTrig(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
 #define KernelVectorAddCBTrigILP2Name "KernelVectorAddCBTrigILP2"
 void LaunchKernelVectorAddCBTrigILP2(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAddCBTrigILP2(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAddCBTrigILP2(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
 #define KernelVectorAddCBTrigILP4Name "KernelVectorAddCBTrigILP4"
 void LaunchKernelVectorAddCBTrigILP4(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAddCBTrigILP4(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAddCBTrigILP4(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
+#define KernelVectorAddCBTrigILP4_128Name "KernelVectorAddCBTrigILP4_128"
+void LaunchKernelVectorAddCBTrigILP4_128(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
+void QueryKernelVectorAddCBTrigILP4_128(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
 
 #define KernelVectorAddCBTrigILP2_64Name "KernelVectorAddCBTrigILP2_64"
 void LaunchKernelVectorAddCBTrigILP2_64(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
-void QueryKernelVectorAddCBTrigILP2_64(char *, int gs_start, int gs_end, int gs_inc, int numele);
+void QueryKernelVectorAddCBTrigILP2_64(char *, int bs_start, int bs_end, int bs_inc, int gs_start, int gs_end, int gs_inc, int numele);
+
+#define KernelMatMultName "KernelMatMult"
+void LaunchKernelMatMult(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
+void QueryKernelMatMult(char *);
+
+#define KernelMatMultFastName "KernelMatMultFast"
+void LaunchKernelMatMultFast(dim3& gs, dim3&bs, char **argv, int argc, int nextarg);
+void QueryKernelMatMultFast(char *);
 
 void InitRandomSequence(float *dBuffer, int NumberOfValues);
 
@@ -46,7 +57,7 @@ void InitRandomSequence(float *dBuffer, int NumberOfValues);
 do {                                                                  \
     cudaError_t err = call;                                           \
     if (cudaSuccess != err) {                                         \
-        fprintf (stderr, "Cuda error in file '%s' in line %i : %s.\n",\
+        fprintf (stderr, "\nCuda error in file '%s' in line %i : %s.\n",\
                  __FILE__, __LINE__, cudaGetErrorString(err) );       \
         exit(EXIT_FAILURE);                                           \
     }                                                                 \
@@ -58,14 +69,14 @@ do {                                                                  \
     /* Check synchronous errors, i.e. pre-launch */                   \
     cudaError_t err = cudaGetLastError();                             \
     if (cudaSuccess != err) {                                         \
-        fprintf (stderr, "Cuda error in file '%s' in line %i : %s.\n",\
+        fprintf (stderr, "\nCuda error in file '%s' in line %i : %s.\n",\
                  __FILE__, __LINE__, cudaGetErrorString(err) );       \
         exit(EXIT_FAILURE);                                           \
     }                                                                 \
     /* Check asynchronous errors, i.e. kernel failed (ULF) */         \
     err = cudaThreadSynchronize();                                    \
     if (cudaSuccess != err) {                                         \
-        fprintf (stderr, "Cuda error in file '%s' in line %i : %s.\n",\
+        fprintf (stderr, "\nCuda error in file '%s' in line %i : %s.\n",\
                  __FILE__, __LINE__, cudaGetErrorString( err) );      \
         exit(EXIT_FAILURE);                                           \
     }                                                                 \
